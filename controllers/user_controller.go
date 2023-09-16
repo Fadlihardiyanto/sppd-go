@@ -9,4 +9,5 @@ type UserController interface {
 	Route(app *fiber.App)
 	FindAll(c *fiber.Ctx) error
 	FindByID(c *fiber.Ctx) error
+	Update(c *fiber.Ctx) error
 }

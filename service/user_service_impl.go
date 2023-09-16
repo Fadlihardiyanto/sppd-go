@@ -103,3 +103,60 @@ func (s *userService) FindByID(ctx context.Context, id string) (models.CreateUse
 
 	return response, nil
 }
+
+func (s *userService) Update(ctx context.Context, request models.UpdateUserRequest) (models.UpdateUserResponse, error) {
+	var response models.UpdateUserResponse
+
+	// validate request
+	err := s.Validate.Struct(request)
+	if err != nil {
+		return response, err
+	}
+
+	// update to database
+	userEntity := entity.UserEntity{
+		IDUser:       request.IDUser,
+		Username:     request.Username,
+		Email:        request.Email,
+		Password:     request.Password,
+		Nama:         request.Nama,
+		NomorTelepon: request.NomorTelepon,
+		Alamat:       request.Alamat,
+	}
+	userEntity, err = s.UserRepository.Update(ctx, userEntity)
+	if err != nil {
+		return response, err
+	}
+
+	// mapping response
+	response = models.UpdateUserResponse{
+		Username:     userEntity.Username,
+		Email:        userEntity.Email,
+		Nama:         userEntity.Nama,
+		NomorTelepon: userEntity.NomorTelepon,
+		Alamat:       userEntity.Alamat,
+	}
+
+	return response, nil
+}
+
+func (s *userService) Delete(ctx context.Context, id string) (models.DeleteUserResponse, error) {
+	var response models.DeleteUserResponse
+
+	// delete from database
+	userEntity, err := s.UserRepository.Delete(ctx, id)
+	if err != nil {
+		return response, err
+	}
+
+	// mapping response
+	response = models.DeleteUserResponse{
+		Username:     userEntity.Username,
+		Email:        userEntity.Email,
+		Nama:         userEntity.Nama,
+		NomorTelepon: userEntity.NomorTelepon,
+		Alamat:       userEntity.Alamat,
+	}
+
+	return response, nil
+}

@@ -22,6 +22,8 @@ func (controller *UserControllerImpl) Route(app *fiber.App) {
 	app.Post("/api/user", controller.Create)
 	app.Get("/api/user", controller.FindAll)
 	app.Get("/api/user/:id", controller.FindByID)
+	app.Put("/api/user", controller.Update)
+	app.Delete("/api/user/:id", controller.Delete)
 }
 
 func (controller *UserControllerImpl) Create(c *fiber.Ctx) error {
@@ -71,6 +73,48 @@ func (controller *UserControllerImpl) FindAll(c *fiber.Ctx) error {
 func (controller *UserControllerImpl) FindByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 	response, err := controller.UserService.FindByID(c.Context(), id)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(models.WebResponse{
+		Code:   200,
+		Status: "OK",
+		Data:   response,
+	})
+}
+
+func (controller *UserControllerImpl) Update(c *fiber.Ctx) error {
+	var request models.UpdateUserRequest
+	err := c.BodyParser(&request)
+	if err != nil {
+		return err
+	}
+
+	//bcrypt password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	// set password
+	request.Password = string(hashedPassword)
+
+	response, err := controller.UserService.Update(c.Context(), request)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(models.WebResponse{
+		Code:   200,
+		Status: "OK",
+		Data:   response,
+	})
+}
+
+func (controller *UserControllerImpl) Delete(c *fiber.Ctx) error {
+	id := c.Params("id")
+	response, err := controller.UserService.Delete(c.Context(), id)
 	if err != nil {
 		return err
 	}

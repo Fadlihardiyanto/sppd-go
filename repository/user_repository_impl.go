@@ -47,7 +47,7 @@ func (r *userRepositoryImpl) FindByID(ctx context.Context, id string) (entity.Us
 }
 
 func (r *userRepositoryImpl) Update(ctx context.Context, userEntity entity.UserEntity) (entity.UserEntity, error) {
-	SQL := "UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?"
+	SQL := "UPDATE users SET username = ?, email = ?, password = ? WHERE id_user = ?"
 	result := r.db.Exec(SQL, userEntity.Username, userEntity.Email, userEntity.Password, userEntity.IDUser)
 	if result.Error != nil {
 		return userEntity, result.Error
@@ -56,9 +56,9 @@ func (r *userRepositoryImpl) Update(ctx context.Context, userEntity entity.UserE
 	return userEntity, nil
 }
 
-func (r *userRepositoryImpl) Delete(ctx context.Context, id int) (entity.UserEntity, error) {
+func (r *userRepositoryImpl) Delete(ctx context.Context, id string) (entity.UserEntity, error) {
 	var user entity.UserEntity
-	SQL := "DELETE FROM users WHERE id = ?"
+	SQL := "DELETE FROM users WHERE id_user = ?"
 	result := r.db.Raw(SQL, id).Scan(&user)
 	if result.Error != nil {
 		return user, result.Error
