@@ -21,6 +21,7 @@ func main() {
 
 	// setup controller
 	userController := controllers.NewUserController(userService)
+	loginController := controllers.NewLoginController(userService)
 
 	// setup fiber app
 	app := fiber.New(config.NewFiberConfig())
@@ -28,6 +29,7 @@ func main() {
 
 	// setup route
 	userController.Route(app)
+	loginController.Route(app)
 
 	// run app
 	err := app.Listen(":3000")

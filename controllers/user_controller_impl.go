@@ -113,8 +113,9 @@ func (controller *UserControllerImpl) Update(c *fiber.Ctx) error {
 }
 
 func (controller *UserControllerImpl) Delete(c *fiber.Ctx) error {
+	// get id fo
 	id := c.Params("id")
-	response, err := controller.UserService.Delete(c.Context(), id)
+	err := controller.UserService.Delete(c.Context(), id)
 	if err != nil {
 		return err
 	}
@@ -122,6 +123,5 @@ func (controller *UserControllerImpl) Delete(c *fiber.Ctx) error {
 	return c.JSON(models.WebResponse{
 		Code:   200,
 		Status: "OK",
-		Data:   response,
 	})
 }

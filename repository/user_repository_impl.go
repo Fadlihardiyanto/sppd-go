@@ -66,3 +66,14 @@ func (r *userRepositoryImpl) Delete(ctx context.Context, id string) (entity.User
 
 	return user, nil
 }
+
+func (r *userRepositoryImpl) Login(ctx context.Context, username string) (entity.UserEntity, error) {
+	var user entity.UserEntity
+	SQL := "SELECT * FROM users WHERE username = ?"
+	result := r.db.Raw(SQL, username).Scan(&user)
+	if result.Error != nil {
+		return user, result.Error
+	}
+
+	return user, nil
+}

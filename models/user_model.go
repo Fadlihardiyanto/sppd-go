@@ -1,5 +1,13 @@
 package models
 
+type UserResponse struct {
+	Username     string `json:"username"`
+	Email        string `json:"email"`
+	Nama         string `json:"nama"`
+	NomorTelepon string `json:"nomor_telepon"`
+	Alamat       string `json:"alamat"`
+}
+
 type CreateUserRequest struct {
 	IDUser       string `json:"user_id" validate:"required"`
 	Username     string `json:"username" validate:"required"`
@@ -24,7 +32,7 @@ type UpdateUserRequest struct {
 	Password     string `json:"password"`
 	Email        string `json:"email"`
 	Nama         string `json:"nama"`
-	NomorTelepon string `json:"nomor_telepon" validate:"numeric"`
+	NomorTelepon string `json:"nomor_telepon"`
 	Alamat       string `json:"alamat"`
 }
 
@@ -42,4 +50,15 @@ type DeleteUserResponse struct {
 	Nama         string `json:"nama"`
 	NomorTelepon string `json:"nomor_telepon"`
 	Alamat       string `json:"alamat"`
+}
+
+type LoginRequest struct {
+	Username string `json:"username" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
+type LoginResponse struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Nama     string `json:"nama"`
 }

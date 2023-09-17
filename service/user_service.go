@@ -11,5 +11,6 @@ type UserService interface {
 	FindAll(ctx context.Context) ([]models.CreateUserResponse, error)
 	FindByID(ctx context.Context, id string) (models.CreateUserResponse, error)
 	Update(ctx context.Context, request models.UpdateUserRequest) (models.UpdateUserResponse, error)
-	Delete(ctx context.Context, id string) (models.DeleteUserResponse, error)
+	Delete(ctx context.Context, id string) error
+	Login(ctx context.Context, request models.LoginRequest) (models.UserResponse, error)
 }

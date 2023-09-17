@@ -7,6 +7,7 @@ import (
 	"github.com/Fadlihardiyanto/sppd-go/models"
 	"github.com/Fadlihardiyanto/sppd-go/repository"
 	"github.com/go-playground/validator/v10"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -113,16 +114,33 @@ func (s *userService) Update(ctx context.Context, request models.UpdateUserReque
 		return response, err
 	}
 
-	// update to database
-	userEntity := entity.UserEntity{
-		IDUser:       request.IDUser,
-		Username:     request.Username,
-		Email:        request.Email,
-		Password:     request.Password,
-		Nama:         request.Nama,
-		NomorTelepon: request.NomorTelepon,
-		Alamat:       request.Alamat,
+	// find id from database
+	userEntity, err := s.UserRepository.FindByID(ctx, request.IDUser)
+	if err != nil {
+		return response, err
 	}
+
+	// update data from database, if request is empty using old data
+	if request.Username != "" {
+		userEntity.Username = request.Username
+	}
+	if request.Email != "" {
+		userEntity.Email = request.Email
+	}
+	if request.Password != "" {
+		userEntity.Password = request.Password
+	}
+	if request.Nama != "" {
+		userEntity.Nama = request.Nama
+	}
+	if request.NomorTelepon != "" {
+		userEntity.NomorTelepon = request.NomorTelepon
+	}
+	if request.Alamat != "" {
+		userEntity.Alamat = request.Alamat
+	}
+
+	// update to database
 	userEntity, err = s.UserRepository.Update(ctx, userEntity)
 	if err != nil {
 		return response, err
@@ -138,19 +156,43 @@ func (s *userService) Update(ctx context.Context, request models.UpdateUserReque
 	}
 
 	return response, nil
+
 }
 
-func (s *userService) Delete(ctx context.Context, id string) (models.DeleteUserResponse, error) {
-	var response models.DeleteUserResponse
+func (s *userService) Delete(ctx context.Context, id string) error {
 
 	// delete from database
-	userEntity, err := s.UserRepository.Delete(ctx, id)
+	_, err := s.UserRepository.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (s *userService) Login(ctx context.Context, request models.LoginRequest) (models.UserResponse, error) {
+	var response models.UserResponse
+
+	err := s.Validate.Struct(request)
+
+	// get data from database and compare password
+	if request.Username == "" {
+		return response, err
+	}
+	userEntity, err := s.UserRepository.Login(ctx, request.Username)
+	if err != nil {
+		return response, err
+
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(userEntity.Password), []byte(request.Password))
 	if err != nil {
 		return response, err
 	}
 
 	// mapping response
-	response = models.DeleteUserResponse{
+	response = models.UserResponse{
 		Username:     userEntity.Username,
 		Email:        userEntity.Email,
 		Nama:         userEntity.Nama,

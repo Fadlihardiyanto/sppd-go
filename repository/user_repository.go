@@ -12,4 +12,5 @@ type UserRepository interface {
 	FindByID(ctx context.Context, id string) (entity.UserEntity, error)
 	Update(ctx context.Context, userEntity entity.UserEntity) (entity.UserEntity, error)
 	Delete(ctx context.Context, id string) (entity.UserEntity, error)
+	Login(ctx context.Context, username string) (entity.UserEntity, error)
 }
